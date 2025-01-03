@@ -1,0 +1,180 @@
+		.faq-actions {
+            margin-top: 10px;
+        }
+        .faq-actions button {
+            padding: 5px 10px;
+            margin-right: 5px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .update-button {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .update-button:hover {
+            background-color: #45a049;
+        }
+        .delete-button {
+            background-color: #f44336;
+            color: white;
+        }
+        .delete-button:hover {
+            background-color: #d32f2f;
+        }
+        .save-button {
+            background-color: #2196F3;
+            color: white;
+        }
+        .save-button:hover {
+            background-color: #1E88E5;
+        }
+        .cancel-button {
+            background-color: #9E9E9E;
+            color: white;
+        }
+        .cancel-button:hover {
+            background-color: #757575;
+        }
+        
+        .faq-add-form {
+			    display: none; /* 폼은 처음에 숨김 */
+			    opacity: 1; /* 초기 상태에서 투명하지 않음 */
+			}
+        
+        
+        .btn-secondary {
+    float: right;
+    background-color: #A4EBF3; /* 밝은 하늘색 */
+    border: none;
+    color: white; /* 텍스트 색상 */
+    padding: 10px 20px; /* 안쪽 여백 */
+    font-size: 16px; /* 글자 크기 */
+    border-radius: 5px; /* 모서리 둥글게 */
+    cursor: pointer; /* 마우스 포인터 변경 */
+    transition: background-color 0.3s, transform 0.2s; /* 애니메이션 효과 */
+}
+
+.btn-secondary:hover {
+    background-color: #81D4FA; /* 조금 더 진한 하늘색 */
+    transform: scale(1.05); /* 살짝 커지는 효과 */
+}
+
+.btn-secondary:active {
+    background-color: #4FC3F7; /* 클릭 시 더 진한 색상 */
+    transform: scale(0.95); /* 살짝 작아지는 효과 */
+}
+		
+		/* 기존 nav 스타일 대신 faq-menu에 적용 */
+		.faq-menu {
+		    display: flex;
+		    justify-content: center; /* 중앙 정렬 */
+		    margin: 30px 0 50px; /* 위아래 간격 조정 */
+		    text-align: center;
+		}
+		
+		.faq-menu a {
+		    margin: 0 50px; /* 좌우 간격 조정 */
+		    text-decoration: none;
+		    color: #666;
+		    font-size: 18px;
+		    font-weight: bold;
+		    padding-bottom: 5px;
+		}
+		
+		.faq-menu a.active {
+		    color: #000;
+		    border-bottom: 2px solid #000;
+		}
+		
+		.faq-menu a:hover {
+		    text-decoration: none;
+		}
+		
+		h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: #333;
+        }
+
+        .section-header {
+            text-align: center;
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .section-header h2 {
+            display: inline-block;
+            background-color: #f9f9f9;
+            padding: 0 20px;
+            color: #333;
+            font-size: 1.5rem;
+            font-weight: normal;
+        }
+
+        .section-header::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #A4EBF3, transparent);
+            z-index: -1;
+        }
+
+        .description {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        details {
+            background: white;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        details:hover {
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        summary {
+            padding: 20px;
+            cursor: pointer;
+            position: relative;
+            font-weight: 500;
+            color: #333;
+            list-style: none;
+        }
+
+        summary::-webkit-details-marker {
+            display: none;
+        }
+
+        summary::after {
+            content: '';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%) rotate(45deg);
+            width: 8px;
+            height: 8px;
+            border-right: 2px solid #666;
+            border-bottom: 2px solid #666;
+            transition: transform 0.3s ease;
+        }
+
+        details[open] summary::after {
+            transform: translateY(-50%) rotate(-135deg);
+        }
+
+        .content {
+            padding: 0 20px 20px;
+            color: #666;
+            line-height: 1.6;
+        }

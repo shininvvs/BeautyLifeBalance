@@ -1,0 +1,93 @@
+.container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        textarea {
+            min-height: 200px;
+            resize: vertical;
+        }
+        
+        .file-upload-container {
+		  display: flex;
+		  flex-direction: column;
+		}
+		
+		.file-upload {
+		  margin-bottom: 10px;
+		}
+		
+		.file-list {
+		  margin-top: 10px;
+		}
+		
+		.file-info {
+		  margin-top: 5px;
+		  font-size: smaller;
+		}
+        
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background-color: #f8f8f8;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
+
+        .file-item button {
+            background: none;
+            border: none;
+            color: #ff4444;
+            cursor: pointer;
+            padding: 0 5px;
+        }
+	
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .btn-list,
+        .btn-submit {
+            background-color: #B4E9E6;
+            color: #333;
+        }
+
+        .btn-list:hover,
+        .btn-submit:hover {
+            background-color: #A3D8D5;
+        }

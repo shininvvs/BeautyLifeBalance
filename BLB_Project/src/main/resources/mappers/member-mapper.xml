@@ -1,0 +1,765 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+<mapper namespace="memberMapper">
+
+	<resultMap id="memberResultSet"	type="member">
+	 		<id column="MEMBER_ID" property="memberId"/>
+	 		<result column="MEMBER_PWD" property="memberPwd" />
+	 		<result column="MEMBER_NAME" property="memberName" />
+	 		<result column="PHONE" property="phone" />
+	 		<result column="EMAIL" property="email" />
+	 		<result column="BIRTHDATE" property="birthdate" /> 		
+	 		<result column="CREATE_DATE" property="createDate" />
+	 		<result column="DELETE_DATE" property="deleteDate" />
+	 		<result column="STATUS" property="status" />
+	 		<result column="TOTAL_POINTS" property="totalPoints" />
+	 		<result column="CURRENT_POINTS" property="currentPoints" />
+	 		<result column="GRADE_NAME" property="gradeName" />
+	 		<result column="SNS_ID" property="snsId" />
+	 		<result column="LOGIN_TYPE" property="loginType" />
+	</resultMap>
+	
+	<resultMap id="deliveryResultSet" type="delivery">
+	 		<id column="DELI_CODE" property="deliCode"/>
+	 		<result column="DELI_NAME" property="deliName" />
+	 		<result column="DELI_PHONE" property="deliPhone" />
+	 		<result column="DELI_ADDRESS" property="deliAddress" />
+	 		<result column="DELI_DEFAULT" property="deliDefault" />
+	 		<result column="DELI_COMMENT" property="deliComment" />
+	 		<result column="POSTCODE" property="postcode" />
+	 		<result column="DETAIL_ADDRESS" property="detailAddress" />
+	 		<result column="MEMBER_ID" property="memberId" />
+	 		<result column="DELI_NICKNAME" property="deliNickname" />
+	 		<result column="HOME_ADDRESS_YN" property="homeAddressYN" />
+	</resultMap>
+
+
+	<resultMap id="orderResultSet" type="order">
+	    	<id column="ORDER_NO" property="orderNo" />
+			<result column="RCVR_NAME" property="rcvrName" />
+		    <result column="RCVR_PHONE" property="rcvrPhone" />
+		    <result column="RCVR_ADDRESS" property="rcvrAddress" />
+		    <result column="DLVR_REQ_MESSAGE" property="dlvrReqMessage" />
+		    <result column="DLVR_STATUS" property="dlvrStatus" />
+		    <result column="DLVR_FEE" property="dlvrFee" />
+		    <result column="DLVR_COMPANY" property="dlvrCompany" />
+		    <result column="DISPATCH_DATE" property="dispatchDate" />
+		    <result column="COMPLETE_DATE" property="completeDate" />
+		    <result column="ORDER_TOTAL_AMT" property="orderTotalAmt" />
+		    <result column="PAYMENT_CODE" property="paymentCode" />
+		    <result column="PAYMENT_METHOD" property="paymentMethod" />
+		    <result column="ORDER_DATE" property="orderDate" />
+		    <result column="REFUND_DATE" property="refundDate" />
+		    <result column="REFUND_REASON" property="refundReason" />
+		    <result column="MEMBER_ID" property="memberId" />
+		    
+		    <collection property="productOrder" ofType="productOrder" resultMap="productOrderResultSet"/>
+		</resultMap>
+	
+	<resultMap id="productOrderResultSet" type="productOrder">
+    	<id column="SERIAL_NO" property="serialNo" />
+		<result column="ORDER_QTy" property="orderQty" />
+	    <result column="TOTAL_AMT" property="totalAmt" />
+	    <result column="ORDER_NO" property="orderNo" />
+	    <result column="OPT_NO" property="optNo" />
+	    <result column="IS_WRITTEN" property="isWritten" />
+	    
+	    <collection property="option" ofType="option" resultMap="optionResultSet"/>
+	</resultMap>
+
+   <resultMap id="optionResultSet" type="option">
+		<id column="OPT_NO" property="optNo" />
+		<result column="OPT_NAME" property="optName" />
+		<result column="OPT_VALUE" property="optValue" />
+		<result column="OPT_ADD_PRICE" property="optAddPrice" />
+		<result column="REMAIN_QTY" property="remainQty" />
+		<result column="PROD_NO" property="prodNo" />
+		
+		<collection property="product" ofType="product" resultMap="productResultSet"/>
+	</resultMap>
+
+	  <resultMap id="productResultSet" type="product">
+		<id column="PROD_NO" property="prodNo"/>
+		<result column="CATEGORY_NAME" property="categoryName"/>
+		<result column="SUBCATEGORY_NAME" property="subcategoryName"/>
+		<result column="PROD_NAME" property="prodName"/>
+		<result column="PROD_CONTENT" property="prodContent"/>
+		<result column="PROD_PRICE" property="prodPrice"/>
+		<result column="PROD_ORIGIN" property="prodOrigin"/>
+		<result column="PROD_CAUTION" property="prodCaution"/>
+		<result column="PROD_COUNT" property="prodCount"/>
+		<result column="PROD_ENROLL_DATE" property="prodEnrollDate"/>
+		<result column="PROD_STATUS" property="prodStatus"/>
+		<result column="THUMB_IMG" property="thumbImg"/>
+	</resultMap>	
+	
+	<resultMap id="inquiryResultSet" type="inquiry">
+		<id column="INQUIRY_NO" property="inquiryNo"/>
+		<result column="INQUIRY_CONTENT" property="inquiryContent"/>
+		<result column="INQUIRY_TYPE" property="inquiryType"/>
+		<result column="INQUIRY_CREATE_DATE" property="inquiryCreateDate"/>
+		<result column="INQUIRY_ANSWERED_YN" property="inquiryAnsweredYn"/>
+		<result column="INQUIRY_STATUS" property="inquiryStatus"/>
+		<result column="MEMBER_ID" property="memberId"/>
+		<result column="PROD_NAME" property="prodName"/>
+	</resultMap>
+	
+	<resultMap id="reviewResultSet" type="review">
+		<id column="REV_NO" property="revNo"/>
+		<result column="REV_TITLE" property="revTitle"/>
+		<result column="REV_CONTENT" property="revContent"/>
+		<result column="REV_ENROLL_DATE" property="revEnrollDate"/>
+		<result column="REV_RATING" property="revRating"/>
+		<result column="REV_STATUS" property="revStatus"/>
+		<result column="SERIAL_NO" property="serialNo"/>
+		<result column="MEMBER_ID" property="memberId"/>
+		<result column="OPT_NO" property="optNo"/>
+		<result column="OPT_NAME" property="optName"/>
+		<result column="OPT_VALUE" property="optValue"/>
+		<result column="PROD_NAME" property="prodName"/>
+		<result column="PROD_NO" property="prodNo"/>
+		<result column="ORDER_DATE" property="orderDate"/>
+		<result column="THUMB_IMG" property="thumbImg"/>
+		
+	
+		<collection property="reviewAttList" ofType="reviewAtt">
+            <id column="REV_ATT_NO" property="revAttNo"/>
+			<result column="ORIG_FILE_NAME" property="origFileName"/>
+			<result column="SAVE_FILE_NAME" property="saveFileName"/>
+			<result column="SAVE_PATH" property="savePath"/>
+			<result column="THUMB_PATH" property="thumbPath"/>
+			<result column="REV_ATT_STATUS" property="revAttStatus"/>
+			<result column="ATT_REV_NO" property="revNo"/>
+        </collection>
+	
+	</resultMap>
+	
+	
+	<resultMap id="cartResultSet" type="cart">
+		<id column="CART_NO" property="cartNo" />
+		<result column="MEMBER_ID" property="memberId" />
+		<result column="PROD_NO" property="prodNo" />
+		<result column="OPT_NO" property="optNo" />
+		<result column="CART_QTY" property="cartQty" />
+		
+		<result column="PROD_NAME" property="prodName" />
+		<result column="OPT_NAME" property="optName" />
+		<result column="OPT_ADD_PRICE" property="optAddPrice" />
+		<result column="REMAIN_QTY" property="remainQty" />
+		<result column="PROD_PRICE" property="prodPrice" />
+		<result column="THUMB_IMG" property="thumbImg" />
+
+	</resultMap>
+	
+	<resultMap id="pointResultSet" type="point">
+		<id column="POINT_NO" property="pointNo"/>
+		<result column="POINT_AMT" property="pointAmt"/>
+		<result column="POINT_REASON" property="pointReason"/>
+		<result column="POINT_DATE" property="pointDate"/>
+		<result column="MEMBER_ID" property="memberId"/>
+	</resultMap>
+	
+	<select id="loginMember"
+			parameterType="member"
+			resultMap="memberResultSet">
+		SELECT *
+		  FROM TB_MEMBER
+		  WHERE MEMBER_ID = #{memberId}
+		   AND UPPER(status)='Y'
+	</select>
+	
+	<select id="selectMemberList"
+			resultMap="memberResultSet">
+		SELECT *
+		  FROM TB_MEMBER
+	</select>
+	
+	<insert id="insertMember" parameterType="member">
+	  	INSERT INTO TB_MEMBER (MEMBER_ID
+	                       ,MEMBER_NAME
+	                       ,MEMBER_PWD
+	                       ,PHONE
+	                       ,EMAIL
+	                       ,BIRTHDATE)                                                                                             
+	                  VALUES(#{memberId}
+	                        ,#{memberName}
+	                        ,#{memberPwd}
+	                        ,#{phone}
+	                        ,#{email}
+	                        ,#{birthdate})            
+  	</insert>
+
+	<select id="idCheck" parameterType="string" resultType="_int">
+		SELECT COUNT(*)
+		  FROM TB_MEMBER
+		  WHERE MEMBER_ID = #{checkId}
+	</select>
+	
+	<insert id="insertDelivery" parameterType="delivery">
+	  	  INSERT INTO TB_DELIVERY (
+							    DELI_CODE,
+							    DELI_NAME,
+							    DELI_PHONE,
+							    POSTCODE,
+							    DELI_DEFAULT,
+							    DELI_ADDRESS,
+							    DETAIL_ADDRESS,
+							    DELI_COMMENT,
+							    MEMBER_ID,
+							    DELI_NICKNAME,
+							    HOME_ADDRESS_YN
+							)
+							VALUES (
+							    SEQ_DELI_CODE.NEXTVAL,
+							    #{deliName},
+							    #{deliPhone},
+							    #{postcode},
+							    #{deliDefault},
+							    #{deliAddress},
+							    #{detailAddress},
+							    #{deliComment},
+							    #{memberId},
+							    #{deliNickname},
+							     NVL(#{homeAddressYN}, 'Y')
+			)       
+  	</insert>
+	
+	<insert id="insertCertEmail" parameterType="certemail">
+		INSERT INTO TB_CERT_EMAIL (
+							   	CERT_EMAIL,
+							    CERT_KEY	    
+							)
+							VALUES (
+							    #{certEmail},
+							    #{certKey}
+							    )
+	</insert>
+	
+	<select id="selectCertEmail" parameterType="certemail" resultType="_int">
+		SELECT COUNT(*)
+		  FROM TB_CERT_EMAIL
+		 WHERE CERT_EMAIL = #{certEmail}
+	       AND CERT_KEY = #{certKey}
+	       AND SYSDATE &lt; CERT_DATE + INTERVAL '5' MINUTE
+	</select>
+	
+	<delete id="deleteCertEmail" parameterType="certemail">
+		DELETE 
+		  FROM TB_CERT_EMAIL
+		 WHERE CERT_EMAIL = #{certEmail}
+		   AND CERT_KEY = #{certKey}	
+	</delete>
+	
+	<update id="updateMember" parameterType="member">
+		UPDATE TB_MEMBER 
+		   SET 	MEMBER_PWD = #{memberPwd},
+	            PHONE = #{phone},
+	            EMAIL = #{email},
+	            BIRTHDATE = #{birthdate}
+	       WHERE MEMBER_ID = #{memberId}
+	       	AND STATUS= 'Y'                
+	</update>
+	<update id="updateAdminMember" parameterType="member">
+		UPDATE TB_MEMBER 
+		   SET 	GRADE_NAME = #{gradeName},
+		   		TOTAL_POINTS = #{totalPoints},
+		   		STATUS = #{status}	           
+	       WHERE MEMBER_ID = #{memberId}
+	</update>
+	
+	<select id="selectDefaultDelivery" parameterType="delivery" resultMap="deliveryResultSet">
+		SELECT POSTCODE, DELI_ADDRESS, DETAIL_ADDRESS
+			FROM TB_DELIVERY		  
+	      WHERE MEMBER_ID = #{memberId} 
+	      	AND HOME_ADDRESS_YN = 'Y'
+	                
+	</select>
+	
+	<update id="updateDelivery" parameterType="delivery">
+		UPDATE TB_DELIVERY
+		   SET 	POSTCODE = #{postcode},
+	            DELI_ADDRESS = #{deliAddress},
+	            DETAIL_ADDRESS = #{detailAddress}
+	      WHERE MEMBER_ID = #{memberId}
+	       AND HOME_ADDRESS_YN = 'Y'
+	</update>
+	
+	<update id="deleteMember" parameterType="member">
+		UPDATE TB_MEMBER 
+		   SET 	STATUS = 'N'
+		     , DELETE_DATE= SYSDATE
+	       WHERE MEMBER_ID = #{memberId}
+	       	AND STATUS= 'Y' 
+	</update>
+	
+	<select id="validateMemberData" parameterType="member" resultType="_int">
+		SELECT COUNT(*)
+		  FROM TB_MEMBER
+		 WHERE MEMBER_ID = #{memberId}
+	       AND MEMBER_NAME = #{memberName}
+	       AND EMAIL = #{email}
+	       AND STATUS='Y'
+	</select>
+	
+	<select id="findMemberId" parameterType="member" resultType="string">
+		SELECT MEMBER_ID
+		  FROM TB_MEMBER
+		 WHERE MEMBER_NAME = #{memberName}
+	       AND EMAIL = #{email}
+	       AND STATUS='Y'
+	</select>
+	
+	
+	<select id="checkMember"
+			parameterType="string"
+			resultMap="memberResultSet">
+		SELECT *
+		  FROM TB_MEMBER
+		  WHERE MEMBER_ID = #{ckMemberId}
+		   AND STATUS ='Y'
+	</select>
+	
+	
+	
+	<update id="updateMemberPwd" parameterType="map">
+	  UPDATE TB_MEMBER
+	  SET MEMBER_PWD = #{newPwd}
+	  WHERE MEMBER_ID = #{memberId}
+	    AND STATUS = 'Y'
+	</update>
+	
+	<!-- 마이페이지용 내 주문배송조회 (날짜별 생각말고 다뽑아오기)-->
+	<select id="selectAllMyOrders" parameterType="hashmap" resultMap="orderResultSet">
+		SELECT O.ORDER_NO,
+			   O.REFUND_DATE,
+	           TO_CHAR(O.ORDER_DATE,'YYYY-MM-DD') AS "ORDER_DATE",
+	           SUM(O.ORDER_TOTAL_AMT) AS "ORDER_TOTAL_AMT",
+               PO.TOTAL_AMT,
+	           O.DLVR_STATUS,
+	           P.PROD_NAME,
+	           P.PROD_NO,
+	           SUM(PO.ORDER_QTY)AS "ORDER_QTY",
+	           OP.OPT_NAME,
+               OP.OPT_NO,
+	           'blb'|| PA.THUMB_PATH || PA.SAVE_FILE_NAME AS "THUMB_IMG",
+	           PO.SERIAL_NO,
+	           (
+	              SELECT COUNT(*)
+			        FROM TB_REVIEW R
+			       WHERE R.SERIAL_NO = PO.SERIAL_NO
+	           ) AS IS_WRITTEN
+	   FROM TB_ORDER O
+	   JOIN TB_PRODUCT_ORDER PO ON PO.ORDER_NO = O.ORDER_NO
+	   JOIN TB_OPTION OP ON OP.OPT_NO = PO.OPT_NO
+	   JOIN TB_PRODUCT P ON P.PROD_NO = OP.PROD_NO
+	 LEFT JOIN  (
+			      SELECT PROD_NO, THUMB_PATH, SAVE_FILE_NAME
+			        FROM TB_PRODUCT_ATTACHMENT
+			       WHERE (PROD_NO, PROD_ATT_NO) IN (
+			           SELECT PROD_NO, MIN(PROD_ATT_NO)
+			             FROM TB_PRODUCT_ATTACHMENT
+			            WHERE PROD_ATT_STATUS = 'Y'
+			              AND THUMB_PATH IS NOT NULL
+			            GROUP BY PROD_NO
+			       )
+			  ) PA ON PA.PROD_NO = P.PROD_NO
+	   WHERE MEMBER_ID = #{memberId}
+	   AND TRUNC(O.ORDER_DATE) BETWEEN TO_DATE(#{startDate}, 'YYYY-MM-DD HH24:MI:SS') 
+                     AND TO_DATE(#{endDate}, 'YYYY-MM-DD HH24:MI:SS')
+	   AND PA.THUMB_PATH IS NOT NULL
+	    GROUP BY O.ORDER_NO, O.REFUND_DATE,O.ORDER_DATE, O.DLVR_STATUS, PO.TOTAL_AMT
+	    		,P.PROD_NAME, OP.OPT_NAME, PA.THUMB_PATH, PA.SAVE_FILE_NAME
+	    		,OP.OPT_NO,P.PROD_NO,PO.SERIAL_NO
+	  ORDER BY O.ORDER_DATE DESC
+	</select>
+	
+	<select id="selectInquiryListTop4" resultMap="inquiryResultSet" parameterType="string">
+		SELECT *
+		   FROM ( 
+		        SELECT ROWNUM AS RNUM, A.* 
+		        FROM ( 
+		                SELECT INQUIRY_NO 
+		                , INQUIRY_ANSWERED_YN 
+		                , INQUIRY_CONTENT
+		                , TO_CHAR(INQUIRY_CREATE_DATE, 'YYYY-MM-DD') AS "INQUIRY_CREATE_DATE"
+		                , INQUIRY_TYPE
+		                FROM TB_INQUIRY I
+		                WHERE INQUIRY_STATUS = 'Y'
+		                 AND MEMBER_ID = #{memberId}
+		                 AND INQUIRY_TYPE &lt;&gt; '상품'
+		                ORDER BY INQUIRY_NO DESC
+		            ) A 
+		   )
+		    WHERE RNUM &lt;= 4 
+	</select>
+	
+	<select id="selectProdQnaTop4" resultMap="inquiryResultSet" parameterType="string">
+		SELECT *
+		   FROM ( 
+		        SELECT ROWNUM AS RNUM, A.* 
+		        FROM ( 
+		                SELECT INQUIRY_NO 
+		                , INQUIRY_ANSWERED_YN 
+		                , INQUIRY_CONTENT
+		                , TO_CHAR(INQUIRY_CREATE_DATE, 'YYYY-MM-DD') AS "INQUIRY_CREATE_DATE"
+		                , INQUIRY_TYPE
+		                FROM TB_INQUIRY I
+		                WHERE INQUIRY_STATUS = 'Y'
+		                 AND MEMBER_ID = #{memberId}
+		                 AND INQUIRY_TYPE = '상품'
+		                ORDER BY INQUIRY_NO DESC
+		            ) A 
+		   )
+		    WHERE RNUM &lt;= 4 
+	</select>
+	
+	<select id="selectMyWishTop4" resultMap="productResultSet" parameterType="string">
+	SELECT * FROM (
+    SELECT P.PROD_NAME,
+           P.PROD_NO,
+           P.PROD_PRICE,
+           PA.THUMB_PATH || PA.SAVE_FILE_NAME AS "THUMB_IMG"
+      FROM TB_WISH W
+      JOIN TB_PRODUCT P ON P.PROD_NO = W.PROD_NO
+ LEFT JOIN (
+        SELECT PROD_NO, THUMB_PATH, SAVE_FILE_NAME
+          FROM TB_PRODUCT_ATTACHMENT
+         WHERE (PROD_NO, PROD_ATT_NO) IN (
+            SELECT PROD_NO, MIN(PROD_ATT_NO)
+              FROM TB_PRODUCT_ATTACHMENT
+             WHERE PROD_ATT_STATUS = 'Y'
+               AND THUMB_PATH IS NOT NULL
+             GROUP BY PROD_NO
+            )
+         ) PA ON PA.PROD_NO = P.PROD_NO
+	    WHERE MEMBER_ID = #{memberId}
+	      AND PA.THUMB_PATH IS NOT NULL
+	   ORDER BY P.PROD_NO DESC
+	)
+	WHERE ROWNUM &lt;= 4
+	</select>
+	
+	<select id="selectDeliveryList" parameterType="string" resultMap="deliveryResultSet">
+	SELECT *
+	  FROM TB_DELIVERY 
+	 WHERE MEMBER_ID = #{memberId}	
+	</select>
+	
+	<select id="selectDeliveryListAll" resultMap="deliveryResultSet">
+	SELECT *
+	  FROM TB_DELIVERY 
+	 WHERE HOME_ADDRESS_YN = 'Y'
+	</select>
+	
+	<delete id="deleteDelivery" parameterType="int">
+		DELETE 
+		  FROM TB_DELIVERY
+		 WHERE DELI_CODE = #{deliCode}	
+	</delete>
+	
+	<select id="selectMemberDelivery" parameterType="_int" resultMap="deliveryResultSet">
+		SELECT *
+			FROM TB_DELIVERY		  
+	      WHERE DELI_CODE = #{deliCode} 
+	</select>
+	
+	<update id="updateMyDelivery" parameterType="delivery">
+		UPDATE  TB_DELIVERY
+		   SET  DELI_NAME = #{deliName},
+		   		DELI_PHONE = #{deliPhone},
+		   		DELI_DEFAULT = #{deliDefault},
+		   		DELI_COMMENT = #{deliComment},
+		   		DELI_NICKNAME = #{deliNickname},		   		
+		   		POSTCODE = #{postcode},
+	            DELI_ADDRESS = #{deliAddress},
+	            DETAIL_ADDRESS = #{detailAddress},
+	            HOME_ADDRESS_YN = #{homeAddressYN}
+	      WHERE DELI_CODE = #{deliCode}
+	      
+	</update>
+	
+	<update id="updateDeliveryAdmin" parameterType="delivery">
+		UPDATE  TB_DELIVERY
+		   SET 	DELI_DEFAULT = #{deliDefault},
+		   		DELI_NICKNAME = #{deliNickname}
+	      WHERE DELI_CODE = #{deliCode}
+	</update>
+	
+	<update id="updateDeliDefault1" parameterType="delivery">
+		
+		UPDATE  TB_DELIVERY
+		   SET  DELI_DEFAULT = 'N'
+	      WHERE MEMBER_ID = #{memberId}
+	       AND  DELI_DEFAULT = 'Y'
+	   
+	</update>
+	
+	<update id="updateDeliDefault2" parameterType="delivery">
+	
+		UPDATE  TB_DELIVERY
+		   SET  DELI_DEFAULT = 'Y'
+	      WHERE DELI_CODE = #{deliCode}
+	       AND  DELI_DEFAULT = 'N'
+	   
+	</update>
+	
+	<select id="myOrderCounts" parameterType="string" resultType="java.util.HashMap">
+		SELECT
+	        COUNT(CASE WHEN DLVR_STATUS = '배송대기' THEN 1 END) AS WAIT,
+	        COUNT(CASE WHEN DLVR_STATUS = '배송완료' THEN 1 END) AS COMPLETE,
+	        COUNT(CASE WHEN DLVR_STATUS = '배송중' THEN 1 END) AS DELIVERY,
+	        COUNT(CASE WHEN DLVR_STATUS = '배송취소' THEN 1 END) AS CANCEL
+	    FROM TB_ORDER
+	    WHERE MEMBER_ID = #{memberId}
+	</select>
+	
+	<select id="myOrderListCount" parameterType="hashmap" resultType="_int">
+		SELECT COUNT(*)
+	      FROM TB_ORDER
+	     WHERE ORDER_DATE BETWEEN #{startDate} AND #{endDate}
+	     AND MEMBER_ID =  #{memberId}
+	</select>
+	
+	<select id="myReviewListCount" parameterType="string" resultType="_int">
+		SELECT COUNT(*)
+	      FROM TB_REVIEW
+	     WHERE MEMBER_ID =  #{memberId}
+	     AND REV_STATUS =  'Y'
+	</select>
+	
+	<select id="selectMyReviewList" parameterType="string" resultMap="reviewResultSet">
+	SELECT R.REV_NO
+	     , R.REV_CONTENT
+	     , R.REV_ENROLL_DATE
+	     , R.REV_RATING
+	     , R.MEMBER_ID
+	     , R.SERIAL_NO
+	     , P.PROD_NAME
+	     , P.PROD_NO
+	     , OP.OPT_NAME
+	     , TO_CHAR(O.ORDER_DATE, 'YYYY.MM.DD') AS "ORDER_DATE"
+	     , PA.THUMB_PATH || PA.SAVE_FILE_NAME AS "THUMB_IMG"
+	     , RA.REV_ATT_NO
+	     , RA.ORIG_FILE_NAME
+	     , RA.SAVE_FILE_NAME AS "SAVE_FILE_NAME" 
+	     , RA.SAVE_PATH
+	     , RA.REV_NO AS "ATT_REV_NO"
+	  FROM TB_REVIEW R
+	       JOIN TB_PRODUCT_ORDER PO ON R.SERIAL_NO = PO.SERIAL_NO
+	       JOIN TB_OPTION OP ON PO.OPT_NO = OP.OPT_NO
+	       JOIN TB_ORDER O ON PO.ORDER_NO = O.ORDER_NO
+	       JOIN TB_PRODUCT P ON P.PROD_NO = OP.PROD_NO
+	  LEFT JOIN TB_REVIEW_ATTACHMENT RA ON R.REV_NO = RA.REV_NO   
+	  LEFT JOIN (
+	               SELECT PA.PROD_NO, PA.THUMB_PATH, PA.SAVE_FILE_NAME
+	                 FROM TB_PRODUCT_ATTACHMENT PA
+	                WHERE (PA.PROD_NO, PA.PROD_ATT_NO) IN (
+	                        SELECT PROD_NO, MIN(PROD_ATT_NO)
+	                          FROM TB_PRODUCT_ATTACHMENT
+	                         WHERE PROD_ATT_STATUS = 'Y'
+	                           AND THUMB_PATH IS NOT NULL
+	                         GROUP BY PROD_NO
+	                     )
+	           ) PA ON PA.PROD_NO = P.PROD_NO
+	 WHERE R.REV_STATUS = 'Y'
+	   AND R.MEMBER_ID = #{memberId}
+	   AND PA.THUMB_PATH IS NOT NULL
+	 ORDER BY R.REV_ENROLL_DATE DESC
+	</select>
+	
+	<select id="myProdQnaListCount" parameterType="string" resultType="_int">
+		SELECT COUNT(*)
+		      FROM TB_INQUIRY
+		     WHERE MEMBER_ID = #{memberId}
+		     AND INQUIRY_STATUS =  'Y'
+             AND INQUIRY_TYPE= '상품'
+	</select>
+	
+	<select id="selectMyOrder" parameterType="string" resultMap="orderResultSet">
+		SELECT O.ORDER_NO,
+			   O.REFUND_DATE,
+		       O.ORDER_DATE,
+		       SUM(O.ORDER_TOTAL_AMT) AS "ORDER_TOTAL_AMT",
+	           PO.TOTAL_AMT,
+		       O.DLVR_STATUS,
+	           O.DLVR_FEE,
+	           O.PAYMENT_METHOD,
+		       P.PROD_NAME,
+		       P.PROD_NO,
+		       PO.ORDER_QTY,
+		       OP.OPT_NAME,
+		       P.PROD_PRICE,
+		       'blb'|| PA.THUMB_PATH || PA.SAVE_FILE_NAME AS "THUMB_IMG"
+		   FROM TB_ORDER O
+	  LEFT JOIN TB_PRODUCT_ORDER PO ON PO.ORDER_NO = O.ORDER_NO
+	  LEFT JOIN TB_OPTION OP ON OP.OPT_NO = PO.OPT_NO
+	  LEFT JOIN TB_PRODUCT P ON P.PROD_NO = OP.PROD_NO
+	  LEFT JOIN  (
+			      SELECT PROD_NO, THUMB_PATH, SAVE_FILE_NAME
+			        FROM TB_PRODUCT_ATTACHMENT
+			       WHERE (PROD_NO, PROD_ATT_NO) IN (
+			           SELECT PROD_NO, MIN(PROD_ATT_NO)
+			             FROM TB_PRODUCT_ATTACHMENT
+			            WHERE PROD_ATT_STATUS = 'Y'
+			              AND THUMB_PATH IS NOT NULL
+			            GROUP BY PROD_NO
+			       		)
+				  ) PA ON PA.PROD_NO = P.PROD_NO
+	     WHERE O.ORDER_NO = #{orderNo}
+		   AND PA.THUMB_PATH IS NOT NULL
+		 GROUP BY  O.ORDER_NO, O.REFUND_DATE, O.ORDER_DATE, PO.TOTAL_AMT, O.DLVR_STATUS,
+         		   PO.ORDER_QTY, P.PROD_PRICE, P.PROD_NAME, P.PROD_NO, OP.OPT_NAME, 
+        		   PA.THUMB_PATH, PA.SAVE_FILE_NAME, O.DLVR_FEE, O.PAYMENT_METHOD
+	</select>
+	
+	<select id="myWishListCount" parameterType="string" resultType="int">
+		SELECT COUNT(*)
+		  FROM TB_WISH
+		 WHERE MEMBER_ID = #{memberId}  
+	</select>
+	
+	<select id="selectMyWishList" parameterType="string" resultMap="productResultSet">
+	SELECT P.PROD_NAME,
+       	   P.PROD_NO,
+           P.PROD_PRICE,
+           PA.THUMB_PATH || PA.SAVE_FILE_NAME AS "THUMB_IMG"
+	       FROM TB_WISH W
+	   JOIN TB_PRODUCT P ON P.PROD_NO = W.PROD_NO
+  LEFT JOIN  (
+		      SELECT PROD_NO, THUMB_PATH, SAVE_FILE_NAME
+		        FROM TB_PRODUCT_ATTACHMENT
+		       WHERE (PROD_NO, PROD_ATT_NO) IN (
+			           SELECT PROD_NO, MIN(PROD_ATT_NO)
+			             FROM TB_PRODUCT_ATTACHMENT
+			            WHERE PROD_ATT_STATUS = 'Y'
+			              AND THUMB_PATH IS NOT NULL
+			            GROUP BY PROD_NO
+        	       )
+			  ) PA ON PA.PROD_NO = P.PROD_NO
+	   WHERE MEMBER_ID = #{memberId}
+	   AND PA.THUMB_PATH IS NOT NULL
+	</select>
+	<delete id="deleteWish" parameterType="_int">
+		DELETE 
+		  FROM TB_WISH
+		 WHERE PROD_NO = #{prodNo}	
+	</delete>
+	
+	<select id="findSnsId" parameterType="string" resultType="_int">
+		SELECT COUNT(*)
+		  FROM TB_MEMBER
+		  WHERE SNS_ID = #{snsId}
+	</select>
+	<select id="kakaoLogin"
+			parameterType="member"
+			resultMap="memberResultSet">
+		SELECT *
+		  FROM TB_MEMBER
+		  WHERE SNS_ID = #{snsId}
+		   AND STATUS='Y'
+		   AND LOGIN_TYPE ='kakao'
+	</select>
+	
+	<insert id="insertKakao" parameterType="member">
+	  	INSERT INTO TB_MEMBER (MEMBER_ID
+	                       ,MEMBER_NAME
+	                       ,EMAIL
+	                       ,SNS_ID
+	                       ,LOGIN_TYPE)                                                                                             
+	                  VALUES(#{memberId}
+	                        ,#{memberName}
+	                        ,#{email}
+	                        ,#{snsId}
+	                        ,#{loginType})            
+  	</insert>
+  	
+  	<select id="myCartCount" parameterType="string"  resultType="_int">
+  	SELECT COUNT(*)
+      FROM TB_CART
+	 WHERE MEMBER_ID = #{memberId}  
+  	</select>
+  	
+  	<select id="selectCart" parameterType="cart" resultType="Integer">
+  	SELECT CART_NO
+      FROM TB_CART
+     WHERE MEMBER_ID = #{memberId}     
+       AND OPT_NO = #{optNo}
+  	</select>
+  	
+  	<select id="selectCartQty" parameterType="_int" resultType="_int">
+  	SELECT CART_QTY
+      FROM TB_CART
+     WHERE CART_NO = #{cartNo}   
+  	</select>
+  	
+  	<insert id="insertCart" parameterType="cart">
+	  	INSERT INTO TB_CART (CART_NO
+	                       ,MEMBER_ID
+	                       ,PROD_NO
+	                       ,OPT_NO
+	                       ,CART_QTY)
+	                  VALUES(SEQ_CART_NO.NEXTVAL
+	                        ,#{memberId}
+	                        ,#{prodNo}
+	                        ,#{optNo}
+	                        ,#{cartQty})         
+  	</insert>
+  	
+  	<select id="selectMyPoints" parameterType="hashmap" resultMap="pointResultSet"> 
+  	SELECT POINT_NO,
+	   	   POINT_AMT,
+           TO_CHAR(POINT_DATE,'YYYY-MM-DD') AS "POINT_DATE",
+	       POINT_REASON 
+	   FROM TB_POINT 
+	   WHERE MEMBER_ID = #{memberId}
+	   AND TRUNC(POINT_DATE) BETWEEN #{startDate} AND #{endDate}                    
+	  ORDER BY POINT_DATE DESC
+  	</select>
+  	
+  	<select id="myPointListCount" parameterType="string" resultType="_int">
+  	SELECT COUNT(*)
+      FROM TB_POINT 
+	 WHERE MEMBER_ID = #{memberId}  
+  	</select>
+  	
+  	<delete id="deleteAllWish" parameterType="string">
+		DELETE 
+		  FROM TB_WISH
+		 WHERE MEMBER_ID = #{memberId}	
+	</delete>
+	
+	<select id="selectMemberAdmin"
+			parameterType="string"
+			resultMap="memberResultSet">
+		SELECT *
+		  FROM TB_MEMBER
+		  WHERE MEMBER_ID = #{ckMemberId}
+		   
+	</select>
+	<select id="selectMemberCount" resultType="map">
+	SELECT 
+	    EXTRACT(YEAR FROM CREATE_DATE) AS YEAR,   -- 년도
+	    EXTRACT(MONTH FROM CREATE_DATE) AS MONTH, -- 월
+	    COUNT(*) AS MEMBER_COUNT                   -- 회원 수
+	FROM 
+	    TB_MEMBER
+	GROUP BY 
+	    EXTRACT(YEAR FROM CREATE_DATE),           -- 연도 기준 그룹화
+	    EXTRACT(MONTH FROM CREATE_DATE)           -- 월 기준 그룹화
+	ORDER BY 
+	    YEAR DESC, MONTH DESC 
+	</select>
+	
+	<insert id="insertWelcomePoint" parameterType="string">
+	  	INSERT INTO TB_POINT (POINT_NO
+	                       ,POINT_AMT
+	                       ,POINT_REASON
+	                       ,POINT_DATE
+	                       ,MEMBER_ID)
+	                  VALUES(SEQ_POINT_NO.NEXTVAL
+	                        ,300
+	                        ,'신규가입'
+	                        ,SYSDATE
+	                        ,#{memberId})         
+  	</insert>
+</mapper>

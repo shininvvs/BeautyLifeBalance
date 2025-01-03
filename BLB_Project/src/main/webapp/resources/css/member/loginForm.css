@@ -1,0 +1,171 @@
+#navigator {
+    width: 100%;
+    height: 80px;
+    background-color: #e3fdfd;
+    position: fixed; /* 화면 상단에 고정 */
+    top: 0;
+    left: 0; /* 전체 화면 기준 */
+    z-index: 100;
+    
+}
+
+#outer {
+   
+    margin-top: 50px;
+    margin-bottom: 150px;
+}
+
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 460px;
+    padding: 20px;
+    margin: 0 auto;
+}
+
+.input-field {
+    width: 100%;
+    height: 48px;
+    padding: 0 15px;
+    margin-bottom: 8px;
+    border: 1px solid #dadada;
+    border-radius: 6px;
+    font-size: 15px;
+    outline: none;
+}
+
+.input-field:focus {
+    border-color: #A4EBF3;
+    border: 2px solid #A4EBF3;
+}
+
+#loginBtn{
+    width: 100%;
+    height: 50px;
+    background-color: #A4EBF3;
+    border: none;
+    border-radius: 10px;
+    box-sizing: border-box;
+  
+  
+    
+}
+.keep-login {
+    margin: 15px 0;
+    color: #777;
+    font-size: 14px;
+  
+}
+.inline-label {
+  display: inline-block !important; 
+  margin-left: 5px;
+}
+
+input[type="checkbox"] {
+   vertical-align: middle; /* 체크박스 수직 정렬 */
+}
+
+.links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+    color: #888;
+    font-size: 14px;
+}
+
+.links a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.links a:hover {
+    text-decoration: underline;
+}
+
+.kakao-logo {
+    width: 100%;
+    height: 60px;
+    background-color: #FFCD00;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    margin-right: 0;
+    color: black;
+
+}
+.kakao-logo i{
+   font-size:30px;
+   margin-right:50px;
+
+}
+
+.social-login {
+	
+    width:100%; /* 가로 정렬 */
+    align-items: center; /* 세로 정렬 */
+    justify-content: center ; /* 중앙 정렬 */
+   
+}
+.social-login a {
+    text-decoration: none; /* 밑줄 제거 */
+    color: inherit; /* 상속된 글씨 색 유지 */
+}
+
+.social-login a:hover {
+    text-decoration: none; /* hover 시에도 밑줄 제거 */
+    color: inherit; /* hover 시에도 글씨 색 유지 */
+}
+
+
+.separator {
+    font-size: 14px;
+    color: #aaa;
+    margin: 0 10px; /* separator의 좌우 여백 */
+}
+.divider {
+    display: inline-block;
+    width: 1px;
+    height: 14px;
+    background-color: #dadada;
+    margin: 0 10px;
+}
+
+#title{
+    text-align: center;
+    margin-bottom: 20px;
+}
+.sub-title{
+    color: #aaa;
+    text-align: center;
+    font-size: 13px;
+
+}
+
+
+hr {
+    border: none;
+    border-top: 1px solid gainsboro;
+    margin : 0px;
+    padding : 0px;
+}
+
+#navigator {
+    width: 100%;
+    height: 80px;
+    background-color: #e3fdfd;
+    position: fixed; /* 화면 상단에 고정 */
+    top: 0;
+    left: 0; /* 전체 화면 기준 */
+    z-index: 100;
+    
+}

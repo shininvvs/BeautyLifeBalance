@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+<mapper namespace="reviewMapper">
+
+	<resultMap id="reviewResultSet" type="review">
+		<id column="REV_NO" property="revNo"/>
+		<result column="REV_TITLE" property="revTitle"/>
+		<result column="REV_CONTENT" property="revContent"/>
+		<result column="REV_ENROLL_DATE" property="revEnrollDate"/>
+		<result column="REV_RATING" property="revRating"/>
+		<result column="REV_STATUS" property="revStatus"/>
+		<result column="SERIAL_NO" property="serialNo"/>
+		<result column="MEMBER_ID" property="memberId"/>
+		<result column="OPT_NO" property="optNo"/>
+		<result column="OPT_NAME" property="optName"/>
+		<result column="OPT_VALUE" property="optValue"/>
+		
+		<!-- 첨부파일을 리스트로 포함 -->
+        <collection property="reviewAttList" ofType="reviewAtt">
+            <id column="REV_ATT_NO" property="revAttNo"/>
+			<result column="ORIG_FILE_NAME" property="origFileName"/>
+			<result column="SAVE_FILE_NAME" property="saveFileName"/>
+			<result column="SAVE_PATH" property="savePath"/>
+			<result column="THUMB_PATH" property="thumbPath"/>
+			<result column="REV_ATT_STATUS" property="revAttStatus"/>
+			<result column="ATT_REV_NO" property="revNo"/>
+        </collection>
+	</resultMap>
+	
+	<resultMap id="reviewAttResultSet" type="reviewAtt">
+		<id column="REV_ATT_NO" property="revAttNo"/>
+		<result column="ORIG_FILE_NAME" property="origFileName"/>
+		<result column="SAVE_FILE_NAME" property="saveFileName"/>
+		<result column="SAVE_PATH" property="savePath"/>
+		<result column="THUMB_PATH" property="thumbPath"/>
+		<result column="REV_ATT_STATUS" property="revAttStatus"/>
+		<result column="REV_NO" property="revNo"/>
+	</resultMap>
+	
+	<resultMap id="reviewStatsSet" type="map">
+		<result column="AVG_RATING" property="avgRating" />
+	    <result column="TOTAL_REVIEWS" property="totalReviews" />
+	    <result column="RATING_5" property="rating5" />
+	    <result column="RATING_4" property="rating4" />
+	    <result column="RATING_3" property="rating3" />
+	    <result column="RATING_2" property="rating2" />
+	    <result column="RATING_1" property="rating1" />
+	</resultMap>
+	
+	<select id="selectReviewCount" parameterType="_int" 
+			resultType="_int">
+		SELECT COUNT(*) AS COUNT
+		  FROM TB_REVIEW R
+		  LEFT JOIN TB_PRODUCT_ORDER PO ON R.SERIAL_NO = PO.SERIAL_NO
+		  LEFT JOIN TB_OPTION OPT ON PO.OPT_NO = OPT.OPT_NO
+		 WHERE OPT.PROD_NO = #{prodNo}
+		   AND R.REV_STATUS = 'Y'
+	</select>
+	
+	<select id="selectReviewAllCount" resultType="_int">
+		SELECT COUNT(*) AS COUNT
+		  FROM TB_REVIEW R
+		  LEFT JOIN TB_PRODUCT_ORDER PO ON R.SERIAL_NO = PO.SERIAL_NO
+		  LEFT JOIN TB_OPTION OPT ON PO.OPT_NO = OPT.OPT_NO
+		 WHERE R.REV_STATUS = 'Y'
+	</select>
+	
+	<select id="selectReviewList" parameterType="_int"
+			resultMap="reviewResultSet">
+		SELECT R.REV_NO
+		     , R.REV_CONTENT
+		     , R.REV_ENROLL_DATE
+		     , R.REV_RATING
+		     , R.MEMBER_ID
+		     , R.SERIAL_NO
+		     , PO.OPT_NO
+		     , OPT.OPT_NAME
+		     , OPT.OPT_VALUE
+		     , RA.REV_ATT_NO
+		     , RA.ORIG_FILE_NAME
+		     , RA.SAVE_FILE_NAME
+		     , RA.SAVE_PATH
+		     , RA.REV_NO AS ATT_REV_NO
+		  FROM TB_REVIEW R
+		  LEFT JOIN TB_PRODUCT_ORDER PO ON R.SERIAL_NO = PO.SERIAL_NO
+		  LEFT JOIN TB_OPTION OPT ON PO.OPT_NO = OPT.OPT_NO
+		  LEFT JOIN TB_REVIEW_ATTACHMENT RA ON R.REV_NO = RA.REV_NO
+		 WHERE OPT.PROD_NO = #{prodNo}
+		   AND R.REV_STATUS = 'Y'
+		ORDER BY R.REV_NO DESC
+	</select>
+	
+	<select id="selectReviewAll" resultMap="reviewResultSet">
+		SELECT R.REV_NO
+		     , R.REV_CONTENT
+		     , R.REV_ENROLL_DATE
+		     , R.REV_RATING
+		     , R.MEMBER_ID
+		     , R.SERIAL_NO
+		     , PO.OPT_NO
+		     , OPT.OPT_NAME
+		     , OPT.OPT_VALUE
+		     , RA.REV_ATT_NO
+		     , RA.ORIG_FILE_NAME
+		     , RA.SAVE_FILE_NAME
+		     , RA.SAVE_PATH
+		     , RA.REV_NO AS ATT_REV_NO
+		  FROM TB_REVIEW R
+		  LEFT JOIN TB_PRODUCT_ORDER PO ON R.SERIAL_NO = PO.SERIAL_NO
+		  LEFT JOIN TB_OPTION OPT ON PO.OPT_NO = OPT.OPT_NO
+		  LEFT JOIN TB_REVIEW_ATTACHMENT RA ON R.REV_NO = RA.REV_NO
+		 WHERE R.REV_STATUS = 'Y'
+		 ORDER BY R.REV_NO DESC
+	</select>
+	
+	<select id="selectReview" parameterType="_int"
+			resultMap="reviewResultSet">
+		SELECT R.REV_NO
+		     , R.REV_CONTENT
+		     , R.REV_ENROLL_DATE
+		     , R.REV_RATING
+		     , R.MEMBER_ID
+		     , R.SERIAL_NO
+		     , RA.REV_ATT_NO
+		     , RA.ORIG_FILE_NAME
+		     , RA.SAVE_FILE_NAME
+		     , RA.SAVE_PATH
+		     , RA.REV_NO AS ATT_REV_NO
+		  FROM TB_REVIEW R
+		  LEFT JOIN TB_REVIEW_ATTACHMENT RA ON R.REV_NO = RA.REV_NO
+		 WHERE R.REV_NO = #{revNo}
+		   AND R.REV_STATUS = 'Y'
+	</select>
+	
+	<select id="selectReviewStats" parameterType="int" resultMap="reviewStatsSet">
+	    SELECT ROUND(AVG(R.REV_RATING), 1) AS AVG_RATING,
+	           COUNT(*) AS TOTAL_REVIEWS,
+	           SUM(CASE WHEN R.REV_RATING = 5 THEN 1 ELSE 0 END) AS RATING_5,
+	           SUM(CASE WHEN R.REV_RATING = 4 THEN 1 ELSE 0 END) AS RATING_4,
+	           SUM(CASE WHEN R.REV_RATING = 3 THEN 1 ELSE 0 END) AS RATING_3,
+	           SUM(CASE WHEN R.REV_RATING = 2 THEN 1 ELSE 0 END) AS RATING_2,
+	           SUM(CASE WHEN R.REV_RATING = 1 THEN 1 ELSE 0 END) AS RATING_1
+	    FROM TB_REVIEW R
+	    JOIN TB_PRODUCT_ORDER PO ON R.SERIAL_NO = PO.SERIAL_NO
+	    JOIN TB_OPTION OPT ON PO.OPT_NO = OPT.OPT_NO
+	    WHERE OPT.PROD_NO = #{prod_no}
+	      AND R.REV_STATUS = 'Y'
+	</select>
+	
+	<!-- 리뷰 작성 여부 확인 -->
+	<select id="isReviewWritten" parameterType="string" resultType="int">
+	    SELECT COUNT(*)
+	      FROM TB_REVIEW R
+	     WHERE R.SERIAL_NO = #{serialNo}
+	</select>
+	
+	<insert id="insertReview" parameterType="review">
+        INSERT INTO TB_REVIEW (REV_NO,
+                       REV_CONTENT, 
+                       REV_ENROLL_DATE,
+                       REV_RATING,
+                       SERIAL_NO, 
+                       MEMBER_ID)
+               VALUES (SEQ_REV_NO.NEXTVAL,
+                       #{revContent}, 
+                       SYSDATE,
+                       #{revRating},
+                       #{serialNo}, 
+                       #{memberId})
+    </insert>
+    
+    <insert id="insertReviewAtt" parameterType="reviewAtt">
+        INSERT INTO TB_REVIEW_ATTACHMENT(REV_ATT_NO,
+                                 ORIG_FILE_NAME,
+                                 SAVE_FILE_NAME,
+                                 SAVE_PATH,
+                                 REV_NO)
+                          VALUES(SEQ_REV_ATT_NO.NEXTVAL,
+                                 #{origFileName},
+                                 #{saveFileName},
+                                 #{savePath},
+                                 SEQ_REV_NO.CURRVAL)
+    </insert>
+    
+    <update id="updateReview" parameterType="review">
+        UPDATE TB_REVIEW
+		   SET REV_CONTENT = #{revContent}
+		     , REV_RATING = #{revRating}
+		 WHERE REV_NO = #{revNo}
+		   AND REV_STATUS = 'Y'
+    </update>
+    
+    <delete id="deleteReviewAtt" parameterType="string">
+    	DELETE
+		  FROM TB_REVIEW_ATTACHMENT
+		 WHERE SAVE_FILE_NAME = #{saveFileName}
+		   AND REV_ATT_STATUS = 'Y'
+    </delete>
+    
+    <insert id="updateReviewAtt" parameterType="reviewAtt">
+    INSERT INTO TB_REVIEW_ATTACHMENT(REV_ATT_NO,
+                             ORIG_FILE_NAME,
+                             SAVE_FILE_NAME,
+                             SAVE_PATH,
+                             REV_NO)
+                      VALUES(SEQ_REV_ATT_NO.NEXTVAL,
+                             #{origFileName},
+                             #{saveFileName},
+                             #{savePath},
+                             #{revNo})
+    </insert>
+    <update id="deleteReview" parameterType="_int">
+        UPDATE TB_REVIEW
+		   SET REV_STATUS = 'N'
+		 WHERE REV_NO = #{revNo}
+		   AND REV_STATUS = 'Y'
+    </update>
+    
+    <!-- 상품별 리뷰 이미지 가져오기 -->
+	<select id="getAllReviewAtt" parameterType="int"
+			resultMap="reviewAttResultSet">
+	    SELECT ORIG_FILE_NAME,
+		       SAVE_FILE_NAME,
+		       SAVE_PATH,
+		       REV_NO
+		  FROM TB_REVIEW_ATTACHMENT
+		 WHERE REV_NO 
+		    IN (SELECT REV_NO FROM TB_REVIEW
+		         WHERE REV_STATUS = 'Y'
+		           AND SERIAL_NO 
+		            IN (SELECT SERIAL_NO FROM TB_PRODUCT_ORDER PO
+		                  JOIN TB_OPTION O ON PO.OPT_NO = O.OPT_NO
+		                 WHERE O.PROD_NO = #{prod_no}
+			        )
+		    )
+		  AND REV_ATT_STATUS = 'Y'
+	</select>
+	
+	<!-- 전체 리뷰 이미지 가져오기 -->
+	<select id="allReviewAtt" resultMap="reviewAttResultSet">
+	    SELECT ORIG_FILE_NAME,
+		       SAVE_FILE_NAME,
+		       SAVE_PATH,
+		       REV_NO
+		  FROM TB_REVIEW_ATTACHMENT
+		 WHERE REV_ATT_STATUS = 'Y'
+	</select>
+	
+	
+	
+</mapper>

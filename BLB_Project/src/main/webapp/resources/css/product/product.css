@@ -1,0 +1,348 @@
+/* * 상품 목록보기 css */
+/* 배너 스타일 */
+.banner {
+    position: relative;
+    width: 100%;
+    height: 30vh;
+    overflow: hidden; /* 이미지가 div 영역을 벗어나지 않도록 */
+    z-index: 1;
+    display: flex;
+    align-items: center; /* 세로 가운데 정렬 */
+    justify-content: center; /* 가로 가운데 정렬 */
+}
+.banner img {
+    width: 100%; /* 가로 크기를 부모 요소에 맞춤 */
+    height: 100%; /* 세로 크기를 부모 요소에 맞춤 */
+    object-fit: cover; /* 이미지 비율을 유지하며 배너 크기에 맞춤 */
+    object-position: center; /* 이미지 가운데 정렬 */
+}
+/* 필터 스타일 */
+td label {
+    margin-right: 15px; /* 라벨 오른쪽 간격 */
+    margin-bottom: 0px; /* 아래쪽 간격 */
+    display: inline-block !important; /* 한 줄에 여러 개 배치되도록 */
+}
+
+/* 상품 카드 스타일 */
+.product-card {
+    border: none !important;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden; /* 자식 요소가 벗어나지 않도록 */
+}
+.product-card:hover .overlay {
+    display: flex; /* 마우스가 카드 영역에 닿았을 때 버튼 출력 */
+}
+.product-card .card-body {
+    z-index: 2;
+}
+
+/* 이미지 컨테이너와 오버레이 */
+.card-img-container {
+    position: relative;
+    width: 100%;
+    padding-top: 100%; /* 1:1 비율 유지 */
+    background-color: #f5f5f5; /* 이미지가 없을 경우 배경색 */
+    overflow: hidden;
+}
+.card-img-container img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 이미지 비율 유지하며 꽉 채우기 */
+    z-index: 1;
+}
+.card-img-container .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(203, 241, 245, 0.5); /* 이미지 위에 오버레이 색상 */
+    display: none; /* 기본적으로 숨김 */
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+    transition: all 0.3s ease-in-out; /* 부드러운 전환 효과 */
+}
+.card-img-container:hover .overlay {
+    display: flex;
+}
+
+/* 버튼 스타일 */
+.card-img-container .btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    background-color: #fff;
+    color: #000;
+    margin: 10px;
+}
+.wishlist-btn {
+    color: red !important;
+}
+.btn-outline-danger.wishlist-btn {
+    padding: 8px 16px; /* 버튼 크기 줄임 */
+}
+
+/* 상품 제목, 설명, 가격 스타일 */
+.card-body .card-title {
+    font-size: 1rem;
+    font-weight: bold;
+}
+.card-body .card-text {
+    font-size: 0.9rem;
+}
+
+/* 별점 스타일 */
+.card-body .text-warning {
+    font-size: 0.8rem;
+}
+
+
+/* * 상품 상세보기 css */
+.product-image { height: 500px; object-fit: contain; }
+.thumbnail { width: 80px; height: 80px; object-fit: cover; cursor: pointer; }
+.top-review {
+    cursor: pointer;
+    display: inline-block; /* 내부 콘텐츠 크기에 맞게 div 크기 조정 */
+    padding: 0; /* 필요 시 여백 제거 */
+    margin: 0; /* 필요 시 외부 여백 제거 */
+}
+.review-stars { color: #f39c12; }
+.tab-content { padding-top: 20px; }
+.sticky-wrapper {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+.tab-item {
+    background-color: #E3FDFD !important;
+    color: gray;
+}
+.tab-item.active {
+    background-color: white !important;
+    color: #4A628A;
+}
+.product-info {
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+}
+#productTabs {
+    background-color: #fff;
+    z-index: 40;
+}
+.full-width-image {
+    width: 100%; /* 부모 div의 가로 크기에 맞춤 */
+    height: auto; /* 비율 유지 */
+    object-fit: contain; /* 내용이 비율에 맞게 보이도록 설정 */
+}
+@media (max-width: 991.98px) {
+    .sticky-wrapper {
+        position: static;
+    }
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #4A628A;
+    margin-bottom: 15px;
+}
+
+.content-box {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #4A628A;
+    background-color: #f9f9f9; /* 배경색 */
+    border: 1px solid #e0e0e0; /* 테두리 */
+    border-radius: 5px; /* 모서리 둥글게 */
+    padding: 15px;
+    white-space: pre-wrap; /* 줄바꿈 처리를 위해 설정 */
+    overflow-wrap: break-word; /* 단어가 길 경우 자동으로 줄바꿈 */
+    word-break: break-word; /* 긴 단어에 대해 줄바꿈 */
+}
+
+/* 리뷰 점수 분포도 및 첨부파일 썸네일 */
+.review-score-distribution {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+.custom-rating-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+.custom-rating-label {
+    width: 100px; /* 좌측 라벨의 고정 너비 */
+    font-size: 14px;
+    color: #333;
+    text-align: left;
+}
+.custom-progress {
+    flex: 1; /* 가로로 늘어나도록 설정 */
+    height: 15px;
+    background-color: #f8f9fa; /* 진행바 배경 */
+    border-radius: 10px;
+    margin: 0 10px; /* 라벨과 수량 간격 조정 */
+    overflow: hidden;
+}
+.custom-progress-bar {
+    height: 100%; /* 진행바 높이 */
+    border-radius: 10px;
+    background-color: #ffc107; /* 부트스트랩 경고색 */
+    transition: width 0.3s ease; /* 부드러운 변화 */
+}
+.custom-rating-count {
+    width: 40px; /* 우측 별점 수량 고정 너비 */
+    font-size: 14px;
+    text-align: right;
+    color: #666;
+}
+.thumbnail-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); /* 최소 너비 80px, 가변 크기 */
+    gap: 5px; /* 썸네일 간격 */
+    max-height: 200px; /* 기본 최대 높이 */
+    overflow: hidden; /* 숨김 처리 */
+}
+/* 전체 보기 시 확장 */
+.thumbnail-container.full-thumbnails {
+    max-height: none; /* 높이 제한 해제 */
+}
+.review-thumbnail {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: transform 0.2s ease-in-out;
+}
+/* 썸네일 더보기 버튼 */
+.show-more-thumbnails-btn {
+    background-color: transparent;
+    border: none;
+    color: #4A628A;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+    display: inline-block;
+}
+.show-more-thumbnails-btn:hover {
+    color: #7AB2D3;
+}
+
+/* 이미지 확대 모달 스타일 */
+.modal.review-image {
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.modal-content.review-image {
+    background: none;
+    border: none;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.modal-content.review-image img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+.close-modal.review-image {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+    z-index: 1060;
+}
+
+/* 기본적으로 3줄까지만 보이게 설정 */
+.review-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* 최대 3줄 */
+    -webkit-box-orient: vertical;
+    line-height: 1.5em; /* 원하는 줄 높이 설정 */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: pre-wrap; /* 줄바꿈 지원 */
+    word-break: break-word; /* 긴 단어 줄바꿈 */
+    transition: max-height 0.3s ease, margin-bottom 0.3s ease; /* 부드러운 확장/축소 효과 */
+    margin-bottom: 10px; /* 기본 간격 */
+}
+
+/* 확장된 리뷰 텍스트 */
+.review-text.expanded {
+    -webkit-line-clamp: unset; /* 줄 제한 해제 */
+    max-height: none; /* 높이 제한 해제 */
+    margin-bottom: 10px; /* 이미지와 간격 확보 */
+}
+
+/* 카드 스타일 */
+.review-card {
+    /* border: 1px solid #e0e0e0;
+    border-radius: 10px; */
+    padding: 15px;
+    background-color: #fff;
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+}
+
+/* 별점 스타일 */
+.review-stars i {
+    color: #ffc107;
+    margin-right: 2px;
+}
+
+/* 전문 보기 버튼 */
+.show-more-btn {
+    background-color: transparent;
+    border: none;
+    color: #4A628A;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 5px;
+    display: inline-block;
+}
+
+.show-more-btn:hover {
+    color: #7AB2D3;
+}
+/* 썸네일 스타일 */
+.review-images {
+    gap: 10px;
+}
+.review-images .thumbnail-container {
+    width: 80px;
+    height: 80px;
+    overflow: hidden;
+    border-radius: 5px;
+    margin-right: 10px;
+    position: relative;
+    cursor: pointer;
+}
+.review-images .thumbnail {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 버튼 스타일 */
+.product-actions .btn {
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+

@@ -1,2 +1,1 @@
-# BeautyLifeBalance
-BeautyLifeBalance 프로젝트
+# 00_Final-Project

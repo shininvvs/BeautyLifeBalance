@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+<mapper namespace="productMapper">
+
+	<resultMap id="productResultSet" type="product">
+		<id column="PROD_NO" property="prodNo"/>
+		<result column="CATEGORY_NAME" property="categoryName"/>
+		<result column="SUBCATEGORY_NAME" property="subcategoryName"/>
+		<result column="PROD_NAME" property="prodName"/>
+		<result column="PROD_CONTENT" property="prodContent"/>
+		<result column="PROD_PRICE" property="prodPrice"/>
+		<result column="PROD_ORIGIN" property="prodOrigin"/>
+		<result column="PROD_CAUTION" property="prodCaution"/>
+		<result column="PROD_COUNT" property="prodCount"/>
+		<result column="PROD_ENROLL_DATE" property="prodEnrollDate"/>
+		<result column="PROD_STATUS" property="prodStatus"/>
+		<result column="THUMB_IMG" property="thumbImg"/>
+		<result column="AVG_RATING" property="avgRating"/>
+		<result column="REVIEW_COUNT" property="reviewCount"/>
+		<result column="IS_WISHED" property="isWished"/>
+		<result column="TOTAL_SALES" property="totalSales"/>
+		<result column="TOTAL_QTY" property="totalQty"/>
+		<result column="BANNER_PATH" property="bannerPath"/>
+		<result column="MD_PATH" property="mdPath"/>
+		<result column="BANNER_FILE_NAME" property="bannerFileName"/>
+	</resultMap>
+	
+	<resultMap id="productAttResultSet" type="productAtt">
+		<id column="PROD_ATT_NO" property="prodAttNo"/>
+		<result column="ORIG_FILE_NAME" property="origFileName"/>
+		<result column="SAVE_FILE_NAME" property="saveFileName"/>
+		<result column="SAVE_PATH" property="savePath"/>
+		<result column="THUMB_PATH" property="thumbPath"/>
+		<result column="PROD_ATT_STATUS" property="prodAttStatus"/>
+		<result column="PROD_NO" property="prodNo"/>
+	</resultMap>
+	
+	<resultMap id="productBannerSet" type="productBanner">
+		<id column="PROD_BANNER_NO" property="prodBannerNo"/>
+		<result column="ORIG_FILE_NAME" property="origFileName"/>
+		<result column="SAVE_FILE_NAME" property="saveFileName"/>
+		<result column="BANNER_PATH" property="bannerPath"/>
+		<result column="MD_PATH" property="mdPath"/>
+		<result column="BANNER_STATUS" property="bannerStatus"/>
+		<result column="PROD_NO" property="prodNo"/>
+	</resultMap>
+	
+	<select id="selectProductCount" parameterType="map" 
+			resultType="_int">
+		SELECT COUNT(*) AS COUNT
+		  FROM TB_PRODUCT
+		 WHERE PROD_STATUS = 'Y'
+		   AND (#{category} = '전체제품' OR CATEGORY_NAME = #{category})
+		   <if test="subcategories != null and subcategories.size() > 0">
+	           AND SUBCATEGORY_NAME IN
+	           <foreach item="subcategory" collection="subcategories" open="(" separator="," close=")">
+	               #{subcategory}
+	           </foreach>
+	       </if>
+	       <if test="keyword != null and keyword != ''">
+           AND (PROD_NAME LIKE '%' || #{keyword} || '%'
+                OR PROD_CONTENT LIKE '%' || #{keyword} || '%')
+       	   </if>
+	</select>
+	
+	<select id="selectProductList" parameterType="map" 
+			resultMap="productResultSet">
+		SELECT P.PROD_NO
+		     , P.CATEGORY_NAME
+		     , P.SUBCATEGORY_NAME
+		     , P.PROD_NAME
+		     , P.PROD_CONTENT
+		     , P.PROD_PRICE
+		     , P.PROD_ORIGIN
+		     , P.PROD_CAUTION
+		     , P.PROD_COUNT
+		     , P.PROD_ENROLL_DATE
+		     , P.PROD_STATUS
+		     , PA.THUMB_PATH || PA.SAVE_FILE_NAME AS "THUMB_IMG"
+		     , NVL(ROUND(AVG(R.REV_RATING), 1), 0) AS AVG_RATING
+           	 , NVL(COUNT(R.REV_NO), 0) AS REVIEW_COUNT
+           	 , NVL(SUM(PO.ORDER_QTY), 0) AS TOTAL_SALES
+           	 , NVL(SUM(OPT.REMAIN_QTY), 0) AS TOTAL_QTY
+           	 , CASE
+	               WHEN (SELECT COUNT(*)
+	                     FROM TB_WISH W
+	                     WHERE W.PROD_NO = P.PROD_NO
+	                       AND W.MEMBER_ID = NVL(#{memberId}, '-1')) > 0
+	               THEN 1
+	               ELSE 0
+	           END AS IS_WISHED
+	          , PB.BANNER_PATH
+	          , PB.MD_PATH
+	          , PB.SAVE_FILE_NAME AS "BANNER_FILE_NAME"
+		  FROM TB_PRODUCT P
+		  LEFT JOIN (
+		      SELECT PROD_NO, THUMB_PATH, SAVE_FILE_NAME
+		        FROM TB_PRODUCT_ATTACHMENT
+		       WHERE (PROD_NO, PROD_ATT_NO) IN (
+		           SELECT PROD_NO, MIN(PROD_ATT_NO)
+		             FROM TB_PRODUCT_ATTACHMENT
+		            WHERE PROD_ATT_STATUS = 'Y'
+		              AND THUMB_PATH IS NOT NULL
+		            GROUP BY PROD_NO
+		       )
+		  ) PA
+		    ON P.PROD_NO = PA.PROD_NO
+		  LEFT JOIN (
+			    SELECT PROD_NO, 
+			           MAX(CASE WHEN BANNER_PATH IS NOT NULL THEN BANNER_PATH END) AS BANNER_PATH,
+			           MAX(CASE WHEN MD_PATH IS NOT NULL THEN MD_PATH END) AS MD_PATH,
+			           MAX(SAVE_FILE_NAME) AS SAVE_FILE_NAME
+			    FROM TB_PRODUCT_BANNER
+			    WHERE BANNER_STATUS = 'Y'
+			    GROUP BY PROD_NO
+			) PB ON P.PROD_NO = PB.PROD_NO
+		  LEFT JOIN TB_OPTION OPT ON P.PROD_NO = OPT.PROD_NO
+		  LEFT JOIN TB_PRODUCT_ORDER PO ON OPT.OPT_NO = PO.OPT_NO
+ 		  LEFT JOIN TB_REVIEW R ON PO.SERIAL_NO = R.SERIAL_NO AND R.REV_STATUS = 'Y'
+		 WHERE P.PROD_STATUS = 'Y'
+		   AND (#{category} = '전체제품' OR CATEGORY_NAME = #{category})
+		   <if test="subcategories != null and subcategories.size() > 0">
+	           AND SUBCATEGORY_NAME IN
+	           <foreach item="subcategory" collection="subcategories" open="(" separator="," close=")">
+	               #{subcategory}
+	           </foreach>
+	       </if>
+	       <if test="keyword != null and keyword != ''">
+           AND (P.PROD_NAME LIKE '%' || #{keyword} || '%'
+                OR P.PROD_CONTENT LIKE '%' || #{keyword} || '%')
+           </if>
+	     GROUP BY P.PROD_NO, P.CATEGORY_NAME, P.SUBCATEGORY_NAME, P.PROD_NAME, 
+	     		  P.PROD_CONTENT, P.PROD_PRICE,
+	     		  P.PROD_ORIGIN, P.PROD_CAUTION,
+	     		  P.PROD_COUNT, P.PROD_ENROLL_DATE, P.PROD_STATUS,
+	           	  PA.THUMB_PATH, PA.SAVE_FILE_NAME, PB.BANNER_PATH, PB.MD_PATH,
+	           	  PB.SAVE_FILE_NAME
+		<choose>
+	        <when test="sortBy == 'recent'">
+	        	ORDER BY P.PROD_NO DESC
+	        </when>
+	        <when test="sortBy == 'rating'">
+	            ORDER BY AVG_RATING DESC
+	        </when>
+	        <when test="sortBy == 'reviews'">
+	            ORDER BY REVIEW_COUNT DESC
+	        </when>
+	        <when test="sortBy == 'sales'">
+	            ORDER BY TOTAL_SALES DESC
+	        </when>
+	        <when test="sortBy == 'lowPrice'">
+	            ORDER BY P.PROD_PRICE ASC
+	        </when>
+	        <when test="sortBy == 'highPrice'">
+	            ORDER BY P.PROD_PRICE DESC
+	        </when>
+	        <otherwise>
+	            ORDER BY P.PROD_ENROLL_DATE DESC
+	        </otherwise>
+    	</choose>
+	</select>
+	
+	<select id="selectProductAdmin" resultMap="productResultSet">
+		SELECT P.PROD_NO
+		     , P.CATEGORY_NAME
+		     , P.SUBCATEGORY_NAME
+		     , P.PROD_NAME
+		     , P.PROD_CONTENT
+		     , P.PROD_PRICE
+		     , P.PROD_ORIGIN
+		     , P.PROD_CAUTION
+		     , P.PROD_COUNT
+		     , P.PROD_ENROLL_DATE
+		     , P.PROD_STATUS
+		     , PA.THUMB_PATH || PA.SAVE_FILE_NAME AS "THUMB_IMG"
+		     , NVL(ROUND(AVG(R.REV_RATING), 1), 0) AS AVG_RATING
+           	 , NVL(COUNT(R.REV_NO), 0) AS REVIEW_COUNT
+           	 , NVL(SUM(PO.ORDER_QTY), 0) AS TOTAL_SALES
+           	 , NVL(SUM(OPT.REMAIN_QTY), 0) AS TOTAL_QTY
+	          , PB.BANNER_PATH
+	          , PB.MD_PATH
+	          , PB.SAVE_FILE_NAME AS "BANNER_FILE_NAME"
+		  FROM TB_PRODUCT P
+		  LEFT JOIN (
+		      SELECT PROD_NO, THUMB_PATH, SAVE_FILE_NAME
+		        FROM TB_PRODUCT_ATTACHMENT
+		       WHERE (PROD_NO, PROD_ATT_NO) IN (
+		           SELECT PROD_NO, MIN(PROD_ATT_NO)
+		             FROM TB_PRODUCT_ATTACHMENT
+		            WHERE THUMB_PATH IS NOT NULL
+		            GROUP BY PROD_NO
+		       )
+		  ) PA
+		    ON P.PROD_NO = PA.PROD_NO
+		  LEFT JOIN (
+			    SELECT PROD_NO, 
+			           MAX(CASE WHEN BANNER_PATH IS NOT NULL THEN BANNER_PATH END) AS BANNER_PATH,
+			           MAX(CASE WHEN MD_PATH IS NOT NULL THEN MD_PATH END) AS MD_PATH,
+			           MAX(SAVE_FILE_NAME) AS SAVE_FILE_NAME
+			    FROM TB_PRODUCT_BANNER
+			    GROUP BY PROD_NO
+			) PB ON P.PROD_NO = PB.PROD_NO
+		  LEFT JOIN TB_OPTION OPT ON P.PROD_NO = OPT.PROD_NO
+		  LEFT JOIN TB_PRODUCT_ORDER PO ON OPT.OPT_NO = PO.OPT_NO
+ 		  LEFT JOIN TB_REVIEW R ON PO.SERIAL_NO = R.SERIAL_NO
+	     GROUP BY P.PROD_NO, P.CATEGORY_NAME, P.SUBCATEGORY_NAME, P.PROD_NAME, 
+	     		  P.PROD_CONTENT, P.PROD_PRICE,
+	     		  P.PROD_ORIGIN, P.PROD_CAUTION,
+	     		  P.PROD_COUNT, P.PROD_ENROLL_DATE, P.PROD_STATUS,
+	           	  PA.THUMB_PATH, PA.SAVE_FILE_NAME, PB.BANNER_PATH, PB.MD_PATH,
+	           	  PB.SAVE_FILE_NAME
+	</select>
+	
+	<select id="increaseViewCount" parameterType="_int">
+		UPDATE TB_PRODUCT
+		   SET PROD_COUNT = PROD_COUNT + 1
+		 WHERE PROD_NO = #{prodNo}
+		   AND PROD_STATUS = 'Y'
+	</select>
+	
+	<select id="selectProduct" parameterType="_int"
+			resultMap="productResultSet">
+		SELECT PROD_NO
+		     , CATEGORY_NAME
+		     , SUBCATEGORY_NAME
+		     , PROD_NAME
+		     , PROD_CONTENT
+		     , PROD_PRICE
+		     , PROD_ORIGIN
+		     , PROD_CAUTION
+		     , PROD_COUNT
+		     , PROD_ENROLL_DATE
+		     , PROD_STATUS
+		  FROM TB_PRODUCT
+		 WHERE PROD_NO = #{prodNo}
+		   AND PROD_STATUS = 'Y'
+	</select>
+	
+		<!-- 심플 상품 정보 추출 (prodNo) -->
+	<select id="getInfoByProdNo" parameterType="_int" 
+			resultMap="productResultSet">
+	    SELECT P.PROD_NO,
+		       P.PROD_NAME,
+		       P.PROD_PRICE,
+		       PA.THUMB_PATH || PA.SAVE_FILE_NAME AS "THUMB_IMG"
+		  FROM TB_PRODUCT P
+		  LEFT JOIN (
+		       SELECT PROD_NO, MIN(PROD_ATT_NO) AS MIN_PROD_ATT_NO
+		         FROM TB_PRODUCT_ATTACHMENT
+		        GROUP BY PROD_NO
+		       ) MPA ON P.PROD_NO = MPA.PROD_NO
+		  LEFT JOIN TB_PRODUCT_ATTACHMENT PA 
+		    ON PA.PROD_NO = MPA.PROD_NO
+		   AND PA.PROD_ATT_NO = MPA.MIN_PROD_ATT_NO
+		 WHERE P.PROD_NO = #{prodNo}
+		   AND PROD_STATUS = 'Y'
+	</select>
+	
+	<select id="selectProductAtt" parameterType="_int"
+			resultMap="productAttResultSet">
+		SELECT PROD_ATT_NO
+		     , ORIG_FILE_NAME
+		     , SAVE_FILE_NAME
+		     , SAVE_PATH
+		     , THUMB_PATH
+		  FROM TB_PRODUCT_ATTACHMENT
+		 WHERE PROD_NO = #{prodNo}
+		   AND PROD_ATT_STATUS = 'Y'
+	</select>
+	
+	<select id="selectProductThumb" parameterType="_int"
+			resultMap="productAttResultSet">
+		SELECT PROD_ATT_NO
+		     , ORIG_FILE_NAME
+		     , SAVE_FILE_NAME
+		     , THUMB_PATH || SAVE_FILE_NAME AS "THUMB_PATH"
+		  FROM TB_PRODUCT_ATTACHMENT
+		 WHERE PROD_NO = #{prodNo}
+		   AND PROD_ATT_STATUS = 'Y'
+		   AND THUMB_PATH IS NOT NULL
+	</select>
+	<select id="selectProductImg" parameterType="_int"
+			resultMap="productAttResultSet">
+		SELECT PROD_ATT_NO
+		     , ORIG_FILE_NAME
+		     , SAVE_FILE_NAME
+		     , SAVE_PATH || SAVE_FILE_NAME AS "SAVE_PATH"
+		  FROM TB_PRODUCT_ATTACHMENT
+		 WHERE PROD_NO = #{prodNo}
+		   AND PROD_ATT_STATUS = 'Y'
+		   AND THUMB_PATH IS NULL
+	</select>
+	
+	<update id="updateProduct" parameterType="product">
+	    UPDATE TB_PRODUCT
+	    SET CATEGORY_NAME = #{categoryName},
+	        SUBCATEGORY_NAME = #{subcategoryName},
+	        PROD_NAME = #{prodName},
+	        PROD_CONTENT = #{prodContent},
+	        PROD_PRICE = #{prodPrice},
+	        PROD_ORIGIN = #{prodOrigin},
+	        PROD_CAUTION = #{prodCaution},
+	        PROD_STATUS = #{prodStatus}
+	    WHERE PROD_NO = #{prodNo}
+	</update>
+	
+	<insert id="insertProduct" parameterType="product">
+        INSERT INTO TB_PRODUCT (PROD_NO,
+		                       CATEGORY_NAME, 
+		                       SUBCATEGORY_NAME,
+		                       PROD_NAME, 
+		                       PROD_CONTENT,
+		                       PROD_PRICE,
+		                       PROD_ORIGIN,
+		                       PROD_CAUTION)
+		               VALUES (SEQ_PROD_NO.NEXTVAL,
+		                       #{categoryName},
+		                       #{subcategoryName},
+		                       #{prodName},
+		                       #{prodContent},
+		                       #{prodPrice},
+		                       #{prodOrigin},
+		                       #{prodCaution})
+    </insert>
+    <select id="getProdNoCurrval" resultType="int">
+	    SELECT SEQ_PROD_NO.CURRVAL FROM DUAL
+	</select>
+    
+    <insert id="insertProductAtt" parameterType="productAtt">
+        INSERT INTO TB_PRODUCT_ATTACHMENT(PROD_ATT_NO,
+                                 ORIG_FILE_NAME,
+                                 SAVE_FILE_NAME,
+                                 SAVE_PATH,
+                                 THUMB_PATH,
+                                 PROD_NO)
+                          VALUES(SEQ_PROD_ATT_NO.NEXTVAL,
+                                 #{origFileName},
+                                 #{saveFileName},
+                                 #{savePath},
+                                 #{thumbPath},
+                                 #{prodNo})
+    </insert>
+    
+    <delete id="deleteProductAtt" parameterType="string">
+    	DELETE
+		  FROM TB_PRODUCT_ATTACHMENT
+		 WHERE SAVE_FILE_NAME = #{saveFileName}
+		   AND PROD_ATT_STATUS = 'Y'
+    </delete>
+    
+    <insert id="updateProductAtt" parameterType="productAtt">
+    INSERT INTO TB_PRODUCT_ATTACHMENT(PROD_ATT_NO,
+                             ORIG_FILE_NAME,
+                             SAVE_FILE_NAME,
+                             SAVE_PATH,
+                             PROD_NO)
+                      VALUES(SEQ_PROD_ATT_NO.NEXTVAL,
+                             #{origFileName},
+                             #{saveFileName},
+                             #{savePath},
+                             #{prodNo})
+    </insert>
+    <update id="toggleProduct" parameterType="_int">
+        UPDATE TB_PRODUCT
+		   SET PROD_STATUS = 'N'
+		 WHERE PROD_NO = #{prodNo}
+		   AND PROD_STATUS = 'Y'
+    </update>
+	
+	<resultMap id="purchaseInfoSet" type="map">
+		<result column="SERIAL_NO" property="serialNo"/>
+		<result column="ORDER_DATE" property="orderDate"/>
+		<result column="OPT_NAME" property="optName"/>
+		<result column="OPT_VALUE" property="optValue"/>
+		<result column="OPT_ADD_PRICE" property="optAddPrice" />
+		<result column="REMAIN_QTY" property="remainQty" />
+		<result column="PROD_NO" property="prodNo"/>
+		<result column="PROD_NAME" property="prodName"/>
+		<result column="PROD_PRICE" property="prodPrice"/>
+		<result column="THUMB_ONE" property="thumbOne"/>
+	</resultMap>
+	
+	<!-- 구매 여부 확인 및 정보 추출 -->
+	<select id="getPurchaseInfo" parameterType="map" 
+			resultMap="purchaseInfoSet">
+	    SELECT PO.SERIAL_NO,
+		       O.ORDER_DATE,
+		       OPT.OPT_NAME,
+		       OPT.OPT_VALUE,
+		       P.PROD_NAME,
+		       PA.THUMB_PATH || PA.SAVE_FILE_NAME AS "THUMB_ONE"
+		  FROM TB_PRODUCT_ORDER PO
+		  JOIN TB_ORDER O ON PO.ORDER_NO = O.ORDER_NO
+		  JOIN TB_OPTION OPT ON PO.OPT_NO = OPT.OPT_NO
+		  JOIN TB_PRODUCT P ON OPT.PROD_NO = P.PROD_NO
+		  LEFT JOIN (
+		     SELECT PROD_NO, MIN(PROD_ATT_NO) AS MIN_PROD_ATT_NO
+		       FROM TB_PRODUCT_ATTACHMENT
+		      GROUP BY PROD_NO
+		) MPA ON P.PROD_NO = MPA.PROD_NO
+		LEFT JOIN TB_PRODUCT_ATTACHMENT PA 
+		       ON PA.PROD_NO = MPA.PROD_NO
+		      AND PA.PROD_ATT_NO = MPA.MIN_PROD_ATT_NO
+		WHERE O.MEMBER_ID = #{memberId}
+		  AND P.PROD_NO = #{prodNo}
+		ORDER BY TO_NUMBER(PO.SERIAL_NO) ASC
+	</select>
+	
+	<!-- 리뷰수정용 구매정보 -->
+	<select id="getInfoByRevNo" parameterType="_int" 
+			resultMap="purchaseInfoSet">
+	    SELECT PO.SERIAL_NO,
+		       O.ORDER_DATE,
+		       OPT.OPT_NAME,
+		       OPT.OPT_VALUE,
+		       P.PROD_NAME,
+		       PA.THUMB_PATH || PA.SAVE_FILE_NAME AS "THUMB_ONE"
+		  FROM TB_REVIEW R
+		  JOIN TB_PRODUCT_ORDER PO ON R.SERIAL_NO = PO.SERIAL_NO
+		  JOIN TB_ORDER O ON PO.ORDER_NO = O.ORDER_NO
+		  JOIN TB_OPTION OPT ON PO.OPT_NO = OPT.OPT_NO
+		  JOIN TB_PRODUCT P ON OPT.PROD_NO = P.PROD_NO
+		  LEFT JOIN (
+		        SELECT PROD_NO, MIN(PROD_ATT_NO) AS MIN_PROD_ATT_NO
+		          FROM TB_PRODUCT_ATTACHMENT
+		         GROUP BY PROD_NO
+		        ) MPA ON P.PROD_NO = MPA.PROD_NO
+		  LEFT JOIN TB_PRODUCT_ATTACHMENT PA 
+		       ON PA.PROD_NO = MPA.PROD_NO
+		      AND PA.PROD_ATT_NO = MPA.MIN_PROD_ATT_NO
+		WHERE R.REV_NO = #{revNo}
+	</select>
+	
+	
+	<!-- 1:1 문의 관련 매퍼 -->
+    <!-- QnA와 답글 resultMap -->
+    <resultMap id="inquiryResultMap" type="inquiry">
+        <id column="INQUIRY_NO" property="inquiryNo"/>
+        <result column="INQUIRY_CONTENT" property="inquiryContent"/>
+   		<result column="INQUIRY_CREATE_DATE" property="inquiryCreateDate"/>
+        <result column="MEMBER_ID" property="memberId"/>
+        
+        <!-- 답글을 리스트로 포함 -->
+        <collection property="replyList" ofType="inquiryReply">
+            <id column="INQUIRY_REPLY_NO" property="inquiryReplyNo"/>
+            <result column="INQUIRY_REPLY_CONTENT" property="inquiryReplyContent"/>
+            <result column="INQUIRY_REPLY_CREATE_DATE" property="inquiryReplyCreateDate"/>
+            <result column="REPLY_MEMBER_ID" property="memberId"/>
+        </collection>
+    </resultMap>
+	
+	<select id="selectProdInquiryCount" parameterType="_int" 
+			resultType="_int">
+		SELECT COUNT(*)
+		  FROM TB_INQUIRY
+		 WHERE INQUIRY_STATUS = 'Y'
+		   AND PROD_NO = #{prodNo}
+	</select>
+	
+	<!-- QnA 목록 조회 (답글 포함) -->
+    <select id="selectProdInquiryList" parameterType="_int" resultMap="inquiryResultMap">
+        SELECT I.INQUIRY_NO
+          	 , I.INQUIRY_CONTENT
+          	 , TO_CHAR(I.INQUIRY_CREATE_DATE, 'YYYY-MM-DD HH:mm:ss') AS "INQUIRY_CREATE_DATE"
+          	 , I.MEMBER_ID
+          	 , R.INQUIRY_REPLY_NO
+          	 , R.INQUIRY_REPLY_CONTENT
+          	 , TO_CHAR(R.INQUIRY_REPLY_CREATE_DATE, 'YYYY-MM-DD HH24:MI:SS') AS INQUIRY_REPLY_CREATE_DATE
+          	 , R.MEMBER_ID AS REPLY_MEMBER_ID
+        FROM TB_INQUIRY I
+        LEFT JOIN TB_INQUIRY_REPLY R 
+            ON I.INQUIRY_NO = R.INQUIRY_NO
+            AND R.INQUIRY_REPLY_STATUS = 'Y'
+        WHERE I.PROD_NO = #{prodNo} 
+          AND I.INQUIRY_STATUS = 'Y'
+        ORDER BY I.INQUIRY_NO DESC
+    </select>
+	
+	<insert id="insertProdInquiry" parameterType="inquiry">
+	    INSERT INTO TB_INQUIRY(INQUIRY_NO
+	    					, INQUIRY_TYPE
+	                        , INQUIRY_CONTENT
+	                        , MEMBER_ID
+	                        , PROD_NO)
+	                   VALUES(SEQ_INQUIRY_NO.NEXTVAL
+	                   		, #{inquiryType}
+	                        , #{inquiryContent}
+	                        , #{memberId}
+	                        , #{prodNo})
+	</insert>
+	
+	<update id="deleteProdInquiry" parameterType="_int">
+		UPDATE TB_INQUIRY
+		   SET INQUIRY_STATUS = 'N'
+		 WHERE INQUIRY_NO = #{inquiryNo}
+	</update>
+	
+	<select id="selectProdInquiry" parameterType="_int" resultMap="inquiryResultMap">
+	    SELECT INQUIRY_NO
+	         , INQUIRY_TYPE
+	         , INQUIRY_CONTENT
+	         , TO_CHAR(INQUIRY_CREATE_DATE, 'YYYY-MM-DD HH:mm:ss') AS "INQUIRY_CREATE_DATE"
+	         , MEMBER_ID
+	         , PROD_NAME
+	         , PROD_NO
+	      FROM TB_INQUIRY 
+	      LEFT JOIN TB_PRODUCT USING(PROD_NO)
+	     WHERE INQUIRY_NO = #{inquiryNo}
+	       AND INQUIRY_STATUS = 'Y'
+	</select>
+	
+	<update id="updateProdInquiry" parameterType="inquiry">
+		UPDATE TB_INQUIRY
+		   SET INQUIRY_CONTENT = #{inquiryContent}
+		 WHERE INQUIRY_NO = #{inquiryNo}
+		   AND INQUIRY_STATUS = 'Y'
+	</update>
+	
+	<!-- Wish(찜하기) 관련 -->
+	<resultMap id="wishSet" type="wish">
+		<result column="MEMBER_ID" property="memberId"/>
+		<result column="PROD_NO" property="prodNo"/>
+	</resultMap>
+	
+	<select id="isWished" parameterType="wish" resultType="_int">
+	    SELECT COUNT(*)
+	    FROM TB_WISH
+	    WHERE MEMBER_ID = #{memberId}
+	      AND PROD_NO = #{prodNo}
+	</select>
+	
+	<insert id="addWish" parameterType="wish">
+	    INSERT INTO TB_WISH (MEMBER_ID, PROD_NO)
+             		 VALUES (#{memberId}, #{prodNo})
+	</insert>
+	
+	<delete id="removeWish" parameterType="wish">
+	    DELETE FROM TB_WISH
+		 WHERE MEMBER_ID = #{memberId}
+		   AND PROD_NO = #{prodNo}
+	</delete>
+	
+	<!-- 장바구니 담기 -->
+	<resultMap id="cartResultSet" type="cart">
+		<id column="CART_NO" property="cartNo" />
+		<result column="MEMBER_ID" property="memberId" />
+		<result column="PROD_NO" property="prodNo" />
+		<result column="OPT_NO" property="optNo" />
+		<result column="CART_QTY" property="cartQty" />
+		
+		<result column="PROD_NAME" property="prodName" />
+		<result column="OPT_NAME" property="optName" />
+		<result column="OPT_ADD_PRICE" property="optAddPrice" />
+		<result column="REMAIN_QTY" property="remainQty" />
+		<result column="PROD_PRICE" property="prodPrice" />
+		<result column="THUMB_IMG" property="thumbImg" />
+	</resultMap>
+	
+	<select id="getCartByMemberAndOption" parameterType="map" 
+			resultMap="cartResultSet">
+	    SELECT CART_NO, MEMBER_ID, PROD_NO, OPT_NO, CART_QTY
+	      FROM TB_CART
+	     WHERE MEMBER_ID = #{memberId}
+	       AND OPT_NO = #{optNo}
+	</select>
+	
+	<update id="updateCart" parameterType="cart">
+	    UPDATE TB_CART
+	       SET CART_QTY = #{cartQty}
+	     WHERE CART_NO = #{cartNo}
+	</update>
+	
+	<insert id="insertCart" parameterType="cart">
+	    INSERT INTO TB_CART (CART_NO, 
+	    					 MEMBER_ID, 
+	    					 PROD_NO, 
+	    					 OPT_NO, 
+	    					 CART_QTY)
+	    			 VALUES (SEQ_CART_NO.NEXTVAL,
+	    			 		 #{memberId}, 
+	    			 		 #{prodNo}, 
+	    			 		 #{optNo}, 
+	    			 		 #{cartQty})
+	</insert>
+	
+	
+	<!-- 바로 구매 상품 주문서에서 조회용 쿼리문 -->
+	<select id="getSelectedProducts"
+			parameterType="map"
+			resultMap="productResultSet">
+		SELECT P.PROD_NO
+		     , P.PROD_NAME
+		     , O.OPT_NO
+		     , O.OPT_NAME
+		     , O.OPT_ADD_PRICE
+		     , O.REMAIN_QTY
+		     , P.PROD_PRICE
+		     , PA.THUMB_PATH || PA.SAVE_FILE_NAME AS "THUMB_IMG"
+		  FROM TB_PRODUCT P
+		LEFT JOIN TB_OPTION O ON P.PROD_NO = O.PROD_NO
+		LEFT JOIN (
+		            SELECT PROD_NO, THUMB_PATH, SAVE_FILE_NAME
+		              FROM TB_PRODUCT_ATTACHMENT
+		             WHERE (PROD_NO, PROD_ATT_NO) IN (
+				           SELECT PROD_NO, MIN(PROD_ATT_NO)
+				             FROM TB_PRODUCT_ATTACHMENT
+				            WHERE PROD_ATT_STATUS = 'Y'
+				              AND THUMB_PATH IS NOT NULL
+				            GROUP BY PROD_NO
+				       )
+				  ) PA
+				    ON P.PROD_NO = PA.PROD_NO
+		WHERE O.OPT_NO IN
+		<foreach item="optNo" collection="optNos" open="(" separator="," close=")">
+		    #{optNo}
+		</foreach>
+	</select>
+	
+	
+	<!-- 배너 이미지 추가 -->
+    <insert id="insertBanner" parameterType="map">
+        INSERT INTO TB_PRODUCT_BANNER
+        (PROD_BANNER_NO, PROD_NO, ORIG_FILE_NAME, SAVE_FILE_NAME, BANNER_PATH, BANNER_STATUS)
+        VALUES
+        (SEQ_PROD_BANNER_NO.NEXTVAL, #{prodNo}, #{origFileName}, #{saveFileName}, #{bannerPath}, 'Y')
+    </insert>
+
+    <!-- MD 배너 이미지 추가 -->
+    <insert id="insertMdBanner" parameterType="map">
+        INSERT INTO TB_PRODUCT_BANNER
+        (PROD_BANNER_NO, PROD_NO, ORIG_FILE_NAME, SAVE_FILE_NAME, MD_PATH, BANNER_STATUS)
+        VALUES
+        (SEQ_PROD_BANNER_NO.NEXTVAL, #{prodNo}, #{origFileName}, #{saveFileName}, #{mdPath}, 'Y')
+    </insert>
+
+    <!-- 배너 이미지 삭제 -->
+    <delete id="deleteBanner" parameterType="string">
+        DELETE FROM TB_PRODUCT_BANNER
+        WHERE SAVE_FILE_NAME = #{saveFileName} AND BANNER_PATH IS NOT NULL
+    </delete>
+
+    <!-- MD 배너 이미지 삭제 -->
+    <delete id="deleteMdBanner" parameterType="string">
+        DELETE FROM TB_PRODUCT_BANNER
+        WHERE SAVE_FILE_NAME = #{saveFileName} AND MD_PATH IS NOT NULL
+    </delete>
+    
+    <!-- 배너 전체 리스트 -->
+    <select id="selectBannerList" resultMap="productBannerSet">
+    	SELECT *
+    	  FROM TB_PRODUCT_BANNER
+    	 WHERE BANNER_STATUS = 'Y'
+    </select>
+    
+	
+</mapper>
